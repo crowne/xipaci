@@ -40,7 +40,7 @@ Clean Architecture MUST be implemented. State management MUST use Riverpod. Auth
 **Rationale**: Single codebase reduces maintenance overhead while Clean Architecture ensures testability and Riverpod provides predictable state management.
 
 ### V. Event-Driven Architecture
-**Principle**: Decouple services through domain events using a minimal, auditable transport mechanism.
+**Principle:** Use event-driven architecture to decouple services and enable asynchronous workflows where appropriate. It is the preferred model for domain-level interactions that benefit from loose coupling, auditability, and scalability. However, for latency-sensitive or transactional flows — such as user login, authentication, or direct API queries — a traditional request-response model is more suitable and SHOULD be used.
 
 PostgreSQL LISTEN/NOTIFY MUST be used as transport layer. Events MUST be JSON format with required fields: event_id (uuid), event_type (string), timestamp (RFC3339), trace_id (uuid), data (object). Channel naming MUST follow `domain_event:<event_type>` pattern. EventPublisher and EventSubscriber interfaces MUST be defined for abstraction.
 
