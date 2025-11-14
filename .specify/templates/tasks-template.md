@@ -17,11 +17,14 @@ description: "Task list template for feature implementation"
 - Include exact file paths in descriptions
 
 ## Path Conventions
-- **Xipaci Monorepo**: `backend-go/`, `frontend-flutter/`, `shared/`, `infra/`
-- **Backend**: `backend-go/cmd/`, `backend-go/internal/`, `backend-go/pkg/`, `backend-go/events/`
-- **Frontend**: `frontend-flutter/lib/`, `frontend-flutter/test/`
-- **Shared**: `shared/schemas/`, `shared/scripts/`
-- Paths shown below follow Xipaci monorepo structure as defined in constitution
+- **SvelteKit PWA**: `src/routes/`, `src/lib/`, `src/app.html`, `capacitor/`, `supabase/`
+- **API Routes**: `src/routes/api/` for server-side endpoints
+- **Pages**: `src/routes/(app)/` for authenticated pages, `src/routes/` for public pages
+- **Components**: `src/lib/components/` for reusable Svelte components
+- **Utilities**: `src/lib/stores/`, `src/lib/utils/`, `src/lib/types/`
+- **Mobile**: `capacitor/android/`, `capacitor/ios/` for native builds
+- **Database**: `supabase/migrations/`, `supabase/types.ts` for Kysely type definitions
+- Paths shown below follow SvelteKit convention as defined in constitution
 
 <!-- 
   ============================================================================

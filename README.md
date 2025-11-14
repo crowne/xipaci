@@ -14,3 +14,6 @@ The issuer of the tokens specifies the characteristics, such as if they can be t
 
 ## Next step
 - [/specify](https://github.com/github/spec-kit?tab=readme-ov-file#3-create-the-spec)
+
+## Notes for Neil
+- See https://khromov.se/how-i-published-a-gratitude-journaling-app-for-ios-and-android-using-sveltekit-and-capacitor/

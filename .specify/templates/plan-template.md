@@ -11,12 +11,12 @@
 
 ## Technical Context
 
-**Language/Version**: Go 1.25.3 (backend), Flutter/Dart (frontend)  
-**Primary Dependencies**: Backend: pgx, Supabase GoTrue, net/http, testify; Frontend: Riverpod, Supabase Flutter SDK, flutter_test, golden_toolkit  
-**Storage**: PostgreSQL (Supabase) with pgx driver, schema management via Supabase migrations  
-**Testing**: Backend: testify, Frontend: flutter_test + golden_toolkit for visual regression  
-**Target Platform**: Mobile (iOS/Android) + Web via Flutter, Backend services on cloud infrastructure
-**Project Type**: Mobile + API (monorepo with backend-go and frontend-flutter)  
+**Language/Version**: TypeScript (SvelteKit), JavaScript (client-side)  
+**Primary Dependencies**: SvelteKit, Kysely, Supabase JavaScript SDK, Capacitor, Vite  
+**Storage**: PostgreSQL (Supabase) with Kysely query builder, type-safe schema access  
+**Testing**: Vitest (unit/integration), Playwright (E2E), Testing Library (components)  
+**Target Platform**: Web (PWA), iOS/Android (Capacitor), mobile web browsers
+**Project Type**: Fullstack PWA with mobile distribution  
 **Performance Goals**: [domain-specific requirements based on feature scope or NEEDS CLARIFICATION]  
 **Constraints**: [domain-specific constraints or NEEDS CLARIFICATION]  
 **Scale/Scope**: [feature-specific scope or NEEDS CLARIFICATION]
@@ -25,16 +25,17 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [ ] **Repository Structure**: Feature respects monorepo boundaries (backend-go/, frontend-flutter/, shared/, infra/)
-- [ ] **Technology Stack**: Uses approved stack (Go 1.25.3, Flutter, PostgreSQL/Supabase, pgx, Riverpod)
-- [ ] **Testing Strategy**: Includes TDD approach with testify (backend) and flutter_test (frontend)
-- [ ] **Authentication & Database**: Uses Supabase GoTrue and PostgreSQL with pgx driver
-- [ ] **Event Architecture**: Uses PostgreSQL LISTEN/NOTIFY with JSON payloads and required fields
+- [ ] **Repository Structure**: Feature respects SvelteKit conventions (src/routes/, src/lib/, src/app.html, capacitor/)
+- [ ] **Technology Stack**: Uses approved stack (SvelteKit, TypeScript, Kysely, Supabase JavaScript SDK, Capacitor)
+- [ ] **Testing Strategy**: Includes TDD approach with Vitest (unit/integration) and Playwright (E2E)
+- [ ] **Authentication & Database**: Uses Supabase GoTrue and PostgreSQL with Kysely query builder
+- [ ] **PWA & Mobile**: Implements PWA manifest and Capacitor configuration for mobile distribution
+- [ ] **Event Architecture**: Uses Supabase real-time subscriptions with simplified event handling for MVP
 - [ ] **Versioning**: API endpoints include version in URL path, uses semantic versioning
 - [ ] **Identifier Safety**: No auto-incrementing IDs for sensitive entities, uses UUIDs/XIDs
 - [ ] **Secret Management**: No secrets in source control, uses environment variables
-- [ ] **Observability**: Includes structured logging (zerolog/logger) and OpenTelemetry tracing
-- [ ] **Code Standards**: Uses required linters (golangci-lint, dart analyze) and EditorConfig
+- [ ] **Observability**: Includes structured console logging and privacy-compliant data handling
+- [ ] **Code Standards**: Uses required linters (ESLint, Prettier, svelte-check, TypeScript) and EditorConfig
 
 ## Project Structure
 
@@ -52,31 +53,36 @@ specs/[###-feature]/
 
 ### Source Code (repository root)
 ```
-# Xipaci Monorepo Structure
-backend-go/
-├── cmd/                 # Entry points
-├── internal/           # Private packages
-├── pkg/               # Reusable public packages
-├── events/            # Event definitions and handlers
-└── go.mod
+# Xipaci SvelteKit PWA Structure
+src/
+├── routes/            # Pages and API routes
+│   ├── api/          # Server-side API endpoints
+│   ├── (app)/        # Application pages (authenticated)
+│   └── +layout.svelte # Root layout
+├── lib/              # Shared components and utilities
+│   ├── components/   # Reusable Svelte components
+│   ├── stores/       # Svelte stores for state management
+│   ├── utils/        # Utility functions
+│   └── types/        # TypeScript type definitions
+├── app.html          # HTML app shell
+└── hooks.server.ts   # SvelteKit server hooks
 
-frontend-flutter/
-├── lib/               # Flutter source code
-├── web/               # Web-specific configuration
-├── test/              # Flutter tests
-└── pubspec.yaml
+tests/
+├── unit/             # Vitest unit tests
+├── integration/      # Vitest integration tests
+└── e2e/              # Playwright E2E tests
 
-shared/
-├── schemas/           # JSON schema definitions
-└── scripts/           # Dev tooling, CI helpers
+capacitor/
+├── android/          # Android build configuration
+├── ios/              # iOS build configuration
+└── capacitor.config.ts # Capacitor configuration
 
-infra/
-├── supabase/          # Supabase configuration
-├── compose/           # Docker configurations
-└── ci/                # CI/CD configurations
+supabase/
+├── migrations/       # Database migrations
+└── types.ts          # Generated Kysely types
 ```
 
-**Structure Decision**: Xipaci uses a monorepo approach with strict separation between backend-go, frontend-flutter, shared assets, and infrastructure. This structure enforces modularity and enables independent development of backend and frontend components while sharing common schemas and tooling.
+**Structure Decision**: Xipaci uses SvelteKit's file-based routing with clear separation between pages, API routes, shared components, and mobile builds. This structure supports rapid MVP development while enabling future scaling.
 
 ## Complexity Tracking
 

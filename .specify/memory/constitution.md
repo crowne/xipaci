@@ -1,10 +1,12 @@
 <!--
 Sync Impact Report:
-- Version change: initial → 1.0.0
-- New constitution created for Xipaci project
-- Principles defined: Repository Structure, Authentication & Database, Backend (Golang), Frontend (Flutter), Event-Driven Architecture, Development Workflow, Coding Standards & Linters, Compliance & Observability, Secret Management, Versioning Strategy, Identifier Safety & URL Hygiene
-- Templates requiring updates: ✅ All templates compatible with new constitution
-- Follow-up TODOs: None - all placeholders filled
+- Version change: 1.0.0 → 2.0.0
+- MAJOR version bump: Fundamental architecture change from Go+Flutter to SvelteKit PWA
+- Modified principles: Repository Structure (monorepo → SvelteKit project), Backend (Go → SvelteKit+Kysely), Frontend (Flutter → SvelteKit PWA), Event-Driven Architecture (simplified for MVP), Coding Standards (Go/Dart → TypeScript/Svelte)
+- Removed principles: None (adapted for new stack)
+- Added sections: Capacitor mobile distribution requirements
+- Templates requiring updates: ✅ Updated plan-template.md and tasks-template.md
+- Follow-up TODOs: None - all placeholders updated for new architecture
 -->
 
 # Xipaci Constitution
@@ -12,60 +14,60 @@ Sync Impact Report:
 ## Core Principles
 
 ### I. Repository Structure
-**Principle**: Enforce modularity, reproducibility, and separation of concerns.
+**Principle**: Enforce modularity, reproducibility, and separation of concerns within a fullstack SvelteKit application.
 
-The monorepo MUST maintain strict separation between backend-go, frontend-flutter, shared assets, and infrastructure components. Each component MUST be independently buildable and testable. The structure `/backend-go`, `/frontend-flutter`, `/shared`, and `/infra` is non-negotiable and ensures clear boundaries for development teams.
+The SvelteKit project MUST maintain clear separation between frontend components, server-side routes, database schemas, and mobile configuration. The structure MUST follow SvelteKit conventions with `/src/routes` for API and pages, `/src/lib` for shared components and utilities, `/src/app.html` for app shell, and `/capacitor` for mobile builds.
 
-**Rationale**: Modularity prevents coupling issues, enables independent deployment, and supports parallel development across teams.
+**Rationale**: SvelteKit's file-based routing and component structure provides natural modularity while enabling rapid MVP development with a single codebase for web and mobile.
 
 ### II. Authentication & Database
 **Principle**: Use a unified provider for authentication and database to reduce integration complexity.
 
-Supabase MUST be used for both authentication (GoTrue) and database (PostgreSQL). The backend MUST use pgx driver for database access. Schema management MUST use Supabase migration tooling with schemas stored in `/shared/schemas`.
+Supabase MUST be used for both authentication (GoTrue) and database (PostgreSQL). The SvelteKit backend MUST use Kysely as the type-safe SQL query builder for database access. Schema management MUST use Supabase migration tooling with type definitions generated for Kysely.
 
-**Rationale**: Single provider reduces authentication-database integration complexity and ensures consistent security policies.
+**Rationale**: Single provider reduces authentication-database integration complexity while Kysely provides type safety and excellent TypeScript integration for rapid development.
 
-### III. Backend (Golang)
-**Principle**: Begin with idiomatic Go and minimal dependencies. Introduce external libraries only when justified by complexity or compliance.
+### III. SvelteKit Backend
+**Principle**: Leverage SvelteKit's fullstack capabilities with minimal external dependencies for rapid MVP development.
 
-Go 1.25.3 MUST be used. HTTP routing MUST use Go standard library (net/http, http.ServeMux). SQL access MUST use pgx. Event transport MUST use PostgreSQL LISTEN/NOTIFY. Testing MUST use testify framework.
+SvelteKit MUST be used for both frontend and backend (server routes). TypeScript MUST be used for type safety. Database access MUST use Kysely for type-safe queries. HTTP API routes MUST follow RESTful conventions in `/src/routes/api`. Testing MUST use Vitest framework.
 
-**Rationale**: Standard library approach reduces dependency bloat and ensures long-term maintainability while leveraging Go's built-in capabilities.
+**Rationale**: SvelteKit's unified development model accelerates MVP delivery while TypeScript and Kysely ensure type safety. Minimal dependencies reduce complexity for initial release.
 
-### IV. Frontend (Flutter)
-**Principle**: Use a single codebase for mobile and web with predictable state management and testability.
+### IV. PWA & Mobile Distribution
+**Principle**: Use a single SvelteKit codebase for web, mobile web, and native mobile distribution.
 
-Clean Architecture MUST be implemented. State management MUST use Riverpod. Authentication MUST use Supabase Flutter SDK. Testing MUST include flutter_test for unit/widget/integration tests and golden_toolkit for visual regression testing.
+The application MUST be built as a Progressive Web App (PWA) with service worker for offline capabilities. Mobile distribution MUST use Capacitor to package the PWA for iOS and Android app stores. Authentication MUST use Supabase JavaScript SDK. State management MUST use Svelte stores for simplicity.
 
-**Rationale**: Single codebase reduces maintenance overhead while Clean Architecture ensures testability and Riverpod provides predictable state management.
+**Rationale**: PWA approach with Capacitor enables rapid deployment across web and mobile platforms from a single codebase, reducing development time for MVP while maintaining native mobile distribution capabilities.
 
 ### V. Event-Driven Architecture
-**Principle:** Use event-driven architecture to decouple services and enable asynchronous workflows where appropriate. It is the preferred model for domain-level interactions that benefit from loose coupling, auditability, and scalability. However, for latency-sensitive or transactional flows — such as user login, authentication, or direct API queries — a traditional request-response model is more suitable and SHOULD be used.
+**Principle**: Implement simple event patterns appropriate for MVP scope with future extensibility.
 
-PostgreSQL LISTEN/NOTIFY MUST be used as transport layer. Events MUST be JSON format with required fields: event_id (uuid), event_type (string), timestamp (RFC3339), trace_id (uuid), data (object). Channel naming MUST follow `domain_event:<event_type>` pattern. EventPublisher and EventSubscriber interfaces MUST be defined for abstraction.
+For MVP, events SHOULD be handled through Supabase real-time subscriptions and database triggers. Complex event sourcing is DEFERRED until post-MVP. When events are needed, they MUST include event_id (uuid), event_type (string), timestamp (RFC3339), and data (object). Event handlers MUST be implemented as SvelteKit server-side functions.
 
-**Rationale**: Database-native events ensure ACID properties while maintaining auditability and enabling future transport layer changes.
+**Rationale**: Simplified event handling reduces MVP complexity while Supabase real-time provides sufficient pub-sub capabilities for initial requirements. Full event architecture can be added later.
 
 ### VI. Development Workflow
 **Principle**: All changes must be test-driven, incremental, and CI-enforced.
 
-Test-Driven Development (TDD) is MANDATORY. Trunk-based development MUST be used. GitHub Actions MUST enforce Lint → Test → Build → Deploy pipeline. Feature flags MUST be implemented using go-feature-flag (backend) and flutter_feature_flags (frontend).
+Test-Driven Development (TDD) is MANDATORY. Trunk-based development MUST be used. GitHub Actions MUST enforce Lint → Test → Build → Deploy pipeline. Feature flags MUST be implemented using environment variables and SvelteKit's conditional rendering for MVP simplicity.
 
-**Rationale**: TDD ensures quality, trunk-based development reduces merge conflicts, and CI enforcement prevents regression.
+**Rationale**: TDD ensures quality, trunk-based development reduces merge conflicts, and CI enforcement prevents regression. Simple feature flagging sufficient for MVP scope.
 
 ### VII. Coding Standards & Linters
-**Principle**: Enforce consistent style and static analysis across all subprojects.
+**Principle**: Enforce consistent style and static analysis across the SvelteKit project.
 
-Each subproject MUST use specified linters: backend-go (golangci-lint, go fmt), frontend-flutter (dart analyze, dart format), shared/scripts (shellcheck, eslint), infra (yamllint, jsonlint). Pre-commit hooks MUST use lefthook. EditorConfig MUST be enforced.
+The project MUST use ESLint for JavaScript/TypeScript linting, Prettier for code formatting, svelte-check for Svelte component analysis, and TypeScript compiler for type checking. Pre-commit hooks MUST use lefthook. EditorConfig MUST be enforced. Kysely type generation MUST be automated.
 
-**Rationale**: Consistent style reduces cognitive load and improves code review efficiency while static analysis catches errors early.
+**Rationale**: Consistent tooling across the TypeScript/Svelte ecosystem reduces cognitive load and improves code review efficiency while automated type generation ensures database schema synchronization.
 
 ### VIII. Compliance & Observability
 **Principle**: All systems must be observable, traceable, and privacy-compliant.
 
-Logging MUST use zerolog (backend) and logger (frontend). Tracing MUST use OpenTelemetry. No PII MUST appear in logs. Pseudonymization MUST be applied where applicable. Supabase RLS MUST control data access.
+Logging MUST use console logging with structured format for SvelteKit server routes and browser console for client-side. For production, logging SHOULD integrate with Supabase Edge Functions or external service. No PII MUST appear in logs. Pseudonymization MUST be applied where applicable. Supabase RLS MUST control data access.
 
-**Rationale**: Observability enables debugging and monitoring while privacy compliance is legally required and builds user trust.
+**Rationale**: Simple logging approach suitable for MVP while maintaining privacy compliance. Supabase RLS provides robust access control for early-stage application.
 
 ### IX. Secret Management
 **Principle**: Secrets must never be committed to source control.
@@ -90,20 +92,22 @@ Auto-incrementing integers are PROHIBITED for sensitive entities (user_id, order
 
 ## Technology Stack Requirements
 
-**Backend**: Go 1.25.3, PostgreSQL via pgx, Supabase GoTrue, net/http, testify
-**Frontend**: Flutter with Riverpod, Supabase Flutter SDK, flutter_test, golden_toolkit
-**Database**: PostgreSQL (Supabase), schema versioning via Supabase migrations
-**Authentication**: Supabase GoTrue with RLS policies
-**Event System**: PostgreSQL LISTEN/NOTIFY, JSON payloads, structured logging
-**CI/CD**: GitHub Actions, golangci-lint, dart analyze, gitleaks, lefthook
+**Fullstack Framework**: SvelteKit with TypeScript, Vite build system
+**Database**: PostgreSQL (Supabase) with Kysely type-safe query builder
+**Authentication**: Supabase GoTrue with JavaScript SDK
+**Mobile**: Capacitor for iOS/Android distribution, PWA for mobile web
+**Testing**: Vitest for unit/integration tests, Playwright for E2E tests
+**Event System**: Supabase real-time subscriptions, database triggers for MVP
+**CI/CD**: GitHub Actions, ESLint, Prettier, svelte-check, TypeScript compiler, gitleaks, lefthook
 
 ## Development Standards
 
-**Testing**: TDD mandatory, contract tests for service boundaries, visual regression for shared UI
-**Code Style**: EditorConfig enforced, language-specific linters in CI, pre-commit hooks
-**Branching**: Trunk-based development, feature flags for incomplete features
-**Documentation**: API versioning in URLs, schema definitions in `/shared/schemas`
+**Testing**: TDD mandatory, API route testing with supertest-style tests, component testing with Testing Library
+**Code Style**: EditorConfig enforced, ESLint + Prettier in CI, TypeScript strict mode, pre-commit hooks
+**Branching**: Trunk-based development, environment-based feature flags for incomplete features
+**Documentation**: API versioning in URLs, Kysely schema types auto-generated from database
 **Security**: No secrets in source control, PII pseudonymization, Supabase RLS enforcement
+**Mobile**: PWA manifest for installability, Capacitor plugins for native features as needed
 
 ## Governance
 
@@ -115,4 +119,4 @@ This constitution supersedes all other development practices and MUST be adhered
 
 **Template Alignment**: Templates in `.specify/templates/` MUST align with constitutional principles. Plan templates MUST include constitution checks, spec templates MUST enforce versioning requirements, task templates MUST reflect principle-driven categorization.
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-19 | **Last Amended**: 2025-10-19
+**Version**: 2.0.0 | **Ratified**: 2025-10-19 | **Last Amended**: 2025-11-14
